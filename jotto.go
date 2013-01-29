@@ -1,19 +1,20 @@
 package main
 
 import (
-	jotto "../../libjotto"
+	"github.com/jasonmm/libjotto"
 	"bufio"
 	"flag"
 	"fmt"
-	"../../gowc/libgowc"
+	"github.com/jasonmm/gowc/libgowc"
 	"math/rand"
 	"os"
+	"strings"
 	"time"
 )
 
 const APP_VERSION = "0.1"
 const APP_NAME = "Jotto"
-const APP_VENDOR = "Shady Brook Software"
+const APP_VENDOR = "jasonmm"
 
 type Game struct {
 	secretWord string
@@ -51,6 +52,7 @@ func getWord(lineNum int, fp *os.File) (word string, e error) {
 		if line, err = reader.ReadString('\n'); err != nil {
 			break
 		}
+		line = strings.TrimSpace(line)
 		cnt++
 		if cnt == lineNum {
 			break
@@ -64,7 +66,7 @@ func chooseSecretWord() error {
 	var err error
 	var numWords libgowc.Metrics
 
-	fmt.Println("Choosing secret word...")
+	fmt.Print("Choosing secret word...")
 
 	if fp, err = os.Open("wordlist.txt"); err != nil {
 		return err
@@ -84,11 +86,18 @@ func chooseSecretWord() error {
 		return err
 	}
 
+	// Make sure the secret word is lowercase.
+	game.secretWord = strings.ToLower(game.secretWord)
+
+	fmt.Println("done.")
+
+	fmt.Println("Secret word has", len(game.secretWord), "letters")
+
 	return nil
 }
 
-func checkGuess(guess string) {
-	jotto.GuessResult(guess, game.secretWord)
+func checkGuess(guess string) int {
+	return libjotto.GuessResult(guess, game.secretWord)
 }
 
 func main() {
@@ -97,12 +106,49 @@ func main() {
 	if *versionFlag {
 		fmt.Println(APP_NAME, "by", APP_VENDOR)
 		fmt.Println("Version:", APP_VERSION)
+		os.Exit(0)
 	}
+
+	fmt.Println()
+	fmt.Print("Welcome to ", APP_NAME)
+	fmt.Println("!")
+	fmt.Println()
 
 	if err := chooseSecretWord(); err != nil {
 		fmt.Println("Error: ", err)
 		return
 	}
 
-	fmt.Println("Word: ", game.secretWord)
+	//fmt.Println("Word: ", game.secretWord)
+
+	var guess string
+
+	for {
+		fmt.Println()
+		fmt.Print("Enter guess: ")
+		if _, err := fmt.Scanln(&guess); err != nil {
+			fmt.Println("  - Error! ", err)
+			continue
+		}
+
+		// Make sure guess is lowercase, cause the secrent word is.
+		guess = strings.ToLower(guess)
+		guess = strings.TrimSpace(guess)
+
+		// Make sure the guess has the same number of letters as the 
+		// secret word.
+		if len(guess) != len(game.secretWord) {
+			fmt.Println("Incorrect number of letters.  The secret word is", len(game.secretWord), "letters long.")
+			continue
+		}
+
+		if guess == game.secretWord {
+			fmt.Println("Correct!")
+			break
+		}
+
+		fmt.Println()
+		fmt.Println("Guess incorrect: ", checkGuess(guess), " letter(s) right")
+
+	}
 }

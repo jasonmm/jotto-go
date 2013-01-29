@@ -1,0 +1,16 @@
+age
+bed
+bog
+gun
+mad
+nod
+pit
+pod
+tag
+toe
+say
+see
+sow
+vex
+yes
+zoo
