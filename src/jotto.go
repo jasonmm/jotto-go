@@ -1,11 +1,11 @@
 package main
 
 import (
+	"../../gowc/libgowc"
 	jotto "../../libjotto"
 	"bufio"
 	"flag"
 	"fmt"
-	"../../gowc/libgowc"
 	"math/rand"
 	"os"
 	"time"
@@ -64,7 +64,7 @@ func chooseSecretWord() error {
 	var err error
 	var numWords libgowc.Metrics
 
-	fmt.Println("Choosing secret word...")
+	fmt.Print("Choosing secret word...")
 
 	if fp, err = os.Open("wordlist.txt"); err != nil {
 		return err
@@ -84,11 +84,13 @@ func chooseSecretWord() error {
 		return err
 	}
 
+	fmt.Println("done.")
+
 	return nil
 }
 
-func checkGuess(guess string) {
-	jotto.GuessResult(guess, game.secretWord)
+func checkGuess(guess string) (numRight int, numRightPlace int) {
+	return jotto.GuessResult(guess, game.secretWord)
 }
 
 func main() {
@@ -99,10 +101,36 @@ func main() {
 		fmt.Println("Version:", APP_VERSION)
 	}
 
+	fmt.Println()
+	fmt.Print("Welcome to ", APP_NAME)
+	fmt.Println("!")
+	fmt.Println()
+
 	if err := chooseSecretWord(); err != nil {
 		fmt.Println("Error: ", err)
 		return
 	}
 
 	fmt.Println("Word: ", game.secretWord)
+
+	var guess string
+
+	for {
+		fmt.Println()
+		fmt.Print("Enter guess: ")
+		if _, err := fmt.Scanln(&guess); err != nil {
+			fmt.Println("  - Error! ", err)
+			continue
+		}
+
+		fmt.Println()
+		numRight, numRightPlace := checkGuess(guess)
+		if numRight == numRightPlace {
+			fmt.Println("Correct!")
+			break
+		}
+
+		fmt.Println("Guess incorrect: ", numRight, " right; ", numRightPlace, " right place")
+
+	}
 }
