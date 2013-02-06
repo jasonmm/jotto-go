@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -51,6 +52,7 @@ func getWord(lineNum int, fp *os.File) (word string, e error) {
 		if line, err = reader.ReadString('\n'); err != nil {
 			break
 		}
+		line = strings.TrimSpace(line)
 		cnt++
 		if cnt == lineNum {
 			break
@@ -84,12 +86,15 @@ func chooseSecretWord() error {
 		return err
 	}
 
+	// Make sure the secret word is lowercase.
+	game.secretWord = strings.ToLower(game.secretWord)
+
 	fmt.Println("done.")
 
 	return nil
 }
 
-func checkGuess(guess string) (numRight int, numRightPlace int) {
+func checkGuess(guess string) int {
 	return jotto.GuessResult(guess, game.secretWord)
 }
 
@@ -123,14 +128,17 @@ func main() {
 			continue
 		}
 
-		fmt.Println()
-		numRight, numRightPlace := checkGuess(guess)
-		if numRight == numRightPlace {
+		// Make sure guess is lowercase, cause the secrent word is.
+		guess = strings.ToLower(guess)
+		guess = strings.TrimSpace(guess)
+
+		if guess == game.secretWord {
 			fmt.Println("Correct!")
 			break
 		}
 
-		fmt.Println("Guess incorrect: ", numRight, " right; ", numRightPlace, " right place")
+		fmt.Println()
+		fmt.Println("Guess incorrect: ", checkGuess(guess), " letter(s) right")
 
 	}
 }
