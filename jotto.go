@@ -1,8 +1,7 @@
 package main
 
 import (
-	//"../../gowc/libgowc"
-	jotto "../libjotto"
+	"github.com/jasonmm/libjotto"
 	"bufio"
 	"flag"
 	"fmt"
@@ -98,7 +97,7 @@ func chooseSecretWord() error {
 }
 
 func checkGuess(guess string) int {
-	return jotto.GuessResult(guess, game.secretWord)
+	return libjotto.GuessResult(guess, game.secretWord)
 }
 
 func main() {
