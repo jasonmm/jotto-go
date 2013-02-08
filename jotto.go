@@ -1,11 +1,12 @@
 package main
 
 import (
-	"../../gowc/libgowc"
-	jotto "../../libjotto"
+	//"../../gowc/libgowc"
+	jotto "../libjotto"
 	"bufio"
 	"flag"
 	"fmt"
+	"github.com/jasonmm/gowc/libgowc"
 	"math/rand"
 	"os"
 	"strings"
@@ -14,7 +15,7 @@ import (
 
 const APP_VERSION = "0.1"
 const APP_NAME = "Jotto"
-const APP_VENDOR = "Shady Brook Software"
+const APP_VENDOR = "jasonmm"
 
 type Game struct {
 	secretWord string
@@ -91,6 +92,8 @@ func chooseSecretWord() error {
 
 	fmt.Println("done.")
 
+	fmt.Println("Secret word has", len(game.secretWord), "letters")
+
 	return nil
 }
 
@@ -104,6 +107,7 @@ func main() {
 	if *versionFlag {
 		fmt.Println(APP_NAME, "by", APP_VENDOR)
 		fmt.Println("Version:", APP_VERSION)
+		os.Exit(0)
 	}
 
 	fmt.Println()
@@ -116,7 +120,7 @@ func main() {
 		return
 	}
 
-	fmt.Println("Word: ", game.secretWord)
+	//fmt.Println("Word: ", game.secretWord)
 
 	var guess string
 
@@ -131,6 +135,13 @@ func main() {
 		// Make sure guess is lowercase, cause the secrent word is.
 		guess = strings.ToLower(guess)
 		guess = strings.TrimSpace(guess)
+
+		// Make sure the guess has the same number of letters as the 
+		// secret word.
+		if len(guess) != len(game.secretWord) {
+			fmt.Println("Incorrect number of letters.  The secret word is", len(game.secretWord), "letters long.")
+			continue
+		}
 
 		if guess == game.secretWord {
 			fmt.Println("Correct!")
