@@ -16,6 +16,7 @@ const APP_VERSION = "0.1"
 const APP_NAME = "Jotto"
 const APP_VENDOR = "jasonmm"
 
+// The game object.
 type Game struct {
 	secretWord string
 	numGuesses int
@@ -42,6 +43,7 @@ func countPossibleWords(fp *os.File) int {
 	return cnt
 }
 
+// Retrieves the words on the specified line of the given file.
 func getWord(lineNum int, fp *os.File) (word string, e error) {
 	var cnt int = 0
 	var line string = ""
@@ -61,6 +63,8 @@ func getWord(lineNum int, fp *os.File) (word string, e error) {
 	return line, err
 }
 
+// Randomly chooses a secret word from a file called "wordlist.txt" and 
+// assigns it to the game object.
 func chooseSecretWord() error {
 	var fp *os.File
 	var err error
@@ -96,6 +100,7 @@ func chooseSecretWord() error {
 	return nil
 }
 
+// Checks the given guess against the game's secret word.
 func checkGuess(guess string) int {
 	return libjotto.GuessResult(guess, game.secretWord)
 }
@@ -123,7 +128,9 @@ func main() {
 
 	var guess string
 
+	// Main game loop.
 	for {
+		// Read a guess from the user.
 		fmt.Println()
 		fmt.Print("Enter guess: ")
 		if _, err := fmt.Scanln(&guess); err != nil {
@@ -131,7 +138,7 @@ func main() {
 			continue
 		}
 
-		// Make sure guess is lowercase, cause the secrent word is.
+		// Make sure guess is lowercase, cause the secret word is.
 		guess = strings.ToLower(guess)
 		guess = strings.TrimSpace(guess)
 
@@ -142,11 +149,14 @@ func main() {
 			continue
 		}
 
+		// If the guess matches the secret word then the game is over.
 		if guess == game.secretWord {
 			fmt.Println("Correct!")
 			break
 		}
 
+		// The guess did not match the secret word.  Display the number of
+		// letters the guess got correct.
 		fmt.Println()
 		fmt.Println("Guess incorrect: ", checkGuess(guess), " letter(s) right")
 
