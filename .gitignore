@@ -1,3 +1,5 @@
 /.project
 /bin/
 /pkg/
+/.idea/
+/*.iml

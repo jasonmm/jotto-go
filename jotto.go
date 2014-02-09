@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/jasonmm/libjotto"
 	"bufio"
 	"flag"
 	"fmt"
 	"github.com/jasonmm/gowc/libgowc"
+	"github.com/jasonmm/libjotto"
 	"math/rand"
 	"os"
 	"strings"
@@ -35,7 +35,7 @@ func countPossibleWords(fp *os.File) int {
 
 	reader := bufio.NewReader(fp)
 	for {
-		if _, err := reader.ReadString('\n'); err != nil {
+		if _, err := reader.ReadString(byte('\n')); err != nil {
 			break
 		}
 		cnt++
@@ -51,7 +51,7 @@ func getWord(lineNum int, fp *os.File) (word string, e error) {
 
 	reader := bufio.NewReader(fp)
 	for {
-		if line, err = reader.ReadString('\n'); err != nil {
+		if line, err = reader.ReadString(byte('\n')); err != nil {
 			break
 		}
 		line = strings.TrimSpace(line)
@@ -63,7 +63,7 @@ func getWord(lineNum int, fp *os.File) (word string, e error) {
 	return line, err
 }
 
-// Randomly chooses a secret word from a file called "wordlist.txt" and 
+// Randomly chooses a secret word from a file called "wordlist.txt" and
 // assigns it to the game object.
 func chooseSecretWord() error {
 	var fp *os.File
@@ -106,7 +106,7 @@ func checkGuess(guess string) int {
 }
 
 func main() {
-	flag.Parse() // Scan the arguments list 
+	flag.Parse() // Scan the arguments list
 
 	if *versionFlag {
 		fmt.Println(APP_NAME, "by", APP_VENDOR)
@@ -142,16 +142,20 @@ func main() {
 		guess = strings.ToLower(guess)
 		guess = strings.TrimSpace(guess)
 
-		// Make sure the guess has the same number of letters as the 
+		// Make sure the guess has the same number of letters as the
 		// secret word.
 		if len(guess) != len(game.secretWord) {
 			fmt.Println("Incorrect number of letters.  The secret word is", len(game.secretWord), "letters long.")
 			continue
 		}
 
+		game.numGuesses = game.numGuesses + 1
+
 		// If the guess matches the secret word then the game is over.
 		if guess == game.secretWord {
 			fmt.Println("Correct!")
+			fmt.Println("It took you ", game.numGuesses, " guesses")
+			fmt.Println()
 			break
 		}
 
